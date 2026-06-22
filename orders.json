@@ -1,0 +1,56 @@
+{
+    "000001": {
+        "chat_id": "test_user_id",
+        "order_data": {
+            "chat_id": "test_user_id",
+            "user_name": "ulugbek",
+            "user_phone": "+998946310074",
+            "delivery_type": "pickup",
+            "items": [
+                {
+                    "id": "m2",
+                    "name_uz": "Manti Qovurma",
+                    "name_ru": "Манты Жареные",
+                    "price": 40000,
+                    "image": "manti_qovurma.png",
+                    "quantity": 1
+                }
+            ],
+            "total_price": 40000,
+            "address": "01 Manticha Qorasaroy (Karasaroy ko'chasi, 6, Toshkent)",
+            "lat": 41.3325,
+            "lng": 69.2612,
+            "entrance": "",
+            "floor": "",
+            "apartment": "",
+            "comment": ""
+        }
+    },
+    "000002": {
+        "chat_id": "test_user_id",
+        "order_data": {
+            "chat_id": "test_user_id",
+            "user_name": "ulugbek",
+            "user_phone": "+998946310074",
+            "delivery_type": "pickup",
+            "items": [
+                {
+                    "id": "m2",
+                    "name_uz": "Manti Qovurma",
+                    "name_ru": "Манты Жареные",
+                    "price": 40000,
+                    "image": "manti_qovurma.png",
+                    "quantity": 1
+                }
+            ],
+            "total_price": 40000,
+            "address": "01 Manticha Qorasaroy (Karasaroy ko'chasi, 6, Toshkent)",
+            "lat": 41.3325,
+            "lng": 69.2612,
+            "entrance": "",
+            "floor": "",
+            "apartment": "",
+            "comment": ""
+        }
+    }
+}
