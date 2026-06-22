@@ -1,12 +1,7 @@
 import sys
 import os
 
-# ============================================================
-# PythonAnywhere WSGI fayli
-# "SIZNING_USERNAMENGIZ" ni o'zingizning username bilan almashtiring!
-# ============================================================
-
-path = '/home/SIZNING_USERNAMENGIZ/manticha'
+path = '/home/manticha/manticha'
 if path not in sys.path:
     sys.path.insert(0, path)
 
