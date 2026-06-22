@@ -20,6 +20,58 @@ bot = telebot.TeleBot(BOT_TOKEN, parse_mode='HTML')
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config['SECRET_KEY'] = SECRET_KEY
 
+# Automatic media assets copy
+def auto_copy_assets():
+    import shutil
+    base = os.path.dirname(os.path.abspath(__file__))
+    dest = os.path.join(base, 'static', 'images')
+    os.makedirs(dest, exist_ok=True)
+    
+    copies = [
+        ('media/image.png', 'green_tea.png'),
+        ('media/image copy.png', 'black_tea.png'),
+        ('media/image copy 2.png', 'lemon_tea.png'),
+        ('media/image copy 3.png', 'black_tea_novot.png'),
+        ('media/image copy 4.png', 'green_tea_novot.png'),
+        ('media1/image.png', 'bonaqua_gas.png'),
+        ('media1/image copy.png', 'cola_draft.png'),
+        ('media1/image copy 2.png', 'cola_bottle.png'),
+        ('media1/image copy 3.png', 'bonaqua_nogas.png'),
+        ('media2/image.png', 'smetana.png'),
+        ('media2/image copy.png', 'sirka.png'),
+        ('media2/image copy 2.png', 'achchiq.png'),
+        ('media2/image copy 3.png', 'qatiq.png'),
+        ('media3/image.png', 'kulcha_non.png'),
+        ('media4/image.png', 'qovoqli_manti.png'),
+        ('media4/image copy.png', 'kokatli_manti.png'),
+        ('media4/image copy 2.png', 'goshtli_manti.png'),
+    ]
+    
+    for src_rel, dst_name in copies:
+        src = os.path.join(base, src_rel)
+        dst = os.path.join(dest, dst_name)
+        if os.path.exists(src):
+            try:
+                shutil.copy2(src, dst)
+            except Exception as e:
+                print(f"Error copying {src_rel}: {e}")
+                
+    # Extra copies for tea variations
+    for extra_dst in ['black_tea_lemon_novot.png', 'green_tea_lemon_novot.png']:
+        src = os.path.join(dest, 'lemon_tea.png')
+        dst = os.path.join(dest, extra_dst)
+        if os.path.exists(src):
+            try:
+                shutil.copy2(src, dst)
+            except Exception as e:
+                print(f"Error copying extra {extra_dst}: {e}")
+
+try:
+    auto_copy_assets()
+except Exception as e:
+    print(f"Asset copy failed: {e}")
+
+
 # File paths for simple JSON database persistence
 USERS_DB = 'users.json'
 ORDERS_DB = 'orders.json'
@@ -44,32 +96,36 @@ orders_data = load_db(ORDERS_DB)
 # Product catalog data structured by category
 PRODUCTS = {
     "blyudo": [
-        {"id": "m1", "name_uz": "Qara Manti (Charcoal)", "name_ru": "Кара Манты (Черное тесто)", "price": 42000, "weight": "150g", "image": "qara_manti.png", "desc_uz": "Ko'mir xamiridan tayyorlangan maxsus manti", "desc_ru": "Особые манты из угольного теста"},
-        {"id": "m2", "name_uz": "Manti Qovurma", "name_ru": "Манты Жареные", "price": 40000, "weight": "150g", "image": "manti_qovurma.png", "desc_uz": "Qarsillaydigan qovurilgan manti", "desc_ru": "Хрустящие жареные манты"},
-        {"id": "m3", "name_uz": "Manti Oddiy", "name_ru": "Манты Классические", "price": 38000, "weight": "150g", "image": "manti_oddiy.png", "desc_uz": "Tog' go'shtidan klassik manti", "desc_ru": "Классические манты из нежной говядины"}
+        {"id": "m1", "name_uz": "Qovoqli manti", "name_ru": "Манты с тыквой", "price": 6000, "weight": "55 g", "image": "qovoqli_manti.png", "desc_uz": "Qovoqli maxsus manti", "desc_ru": "Особые манты с тыквой"},
+        {"id": "m2", "name_uz": "Ko'katli va go'shtli manti", "name_ru": "Манты с зеленью и мясом", "price": 8000, "weight": "55 g", "image": "kokatli_manti.png", "desc_uz": "Ko'katlar va yangi go'shtli manti", "desc_ru": "Манты с зеленью и нежным мясом"},
+        {"id": "m3", "name_uz": "Go'shtli manti", "name_ru": "Манты с мясом", "price": 9500, "weight": "55 g", "image": "goshtli_manti.png", "desc_uz": "Sof go'shtli toza manti", "desc_ru": "Классические манты с сочным мясом"}
     ],
     "salat": [
-        {"id": "s1", "name_uz": "Zu Zuki Salat", "name_ru": "Салат Зу Зуки", "price": 11000, "weight": "150g", "image": "zu_zuki.png", "desc_uz": "Yengil va mazali salat", "desc_ru": "Легкий и вкусный салат"},
-        {"id": "s2", "name_uz": "Achichuk Salat", "name_ru": "Салат Ачичук", "price": 10000, "weight": "150g", "image": "achichuk.png", "desc_uz": "Pomidor va piyozdan tayyorlangan achchiq salat", "desc_ru": "Острый салат из помидоров и лука"}
+        {"id": "s1", "name_uz": "Zu Zuki Salat", "name_ru": "Салат Зу Зуки", "price": 11000, "weight": "150 g", "image": "zu_zuki.png", "desc_uz": "Yengil va mazali salat", "desc_ru": "Легкий и вкусный салат"},
+        {"id": "s2", "name_uz": "Achichuk Salat", "name_ru": "Салат Ачичук", "price": 10000, "weight": "150 g", "image": "achichuk.png", "desc_uz": "Pomidor va piyozdan achchiq salat", "desc_ru": "Острый салат из помидоров и лука"}
     ],
     "non": [
-        {"id": "n1", "name_uz": "Obi Non", "name_ru": "Оби Нон", "price": 4000, "weight": "200g", "image": "obi_non.png", "desc_uz": "Issiq yopgan non", "desc_ru": "Горячая лепешка"},
-        {"id": "n2", "name_uz": "Patir Non", "name_ru": "Патыр Нон", "price": 6000, "weight": "250g", "image": "patir_non.png", "desc_uz": "Yog'li va mazali patir non", "desc_ru": "Сдобная лепешка патыр"}
+        {"id": "n1", "name_uz": "Kulcha Non", "name_ru": "Кульча Нон", "price": 3000, "weight": "50 g", "image": "kulcha_non.png", "desc_uz": "Kichkina shirin kulcha non", "desc_ru": "Маленькая лепешка кульча"}
     ],
     "napitki": [
-        {"id": "d1", "name_uz": "Gazlangan suv BonAqua 0.5", "name_ru": "Газированная вода BonAqua 0.5", "price": 5000, "weight": "500g", "image": "bonaqua_gas.png", "desc_uz": "Salqin gazlangan mineral suv", "desc_ru": "Освежающая газированная вода"},
-        {"id": "d2", "name_uz": "Coca-Cola 0.4 razliv", "name_ru": "Coca-Cola 0.4 разлив", "price": 10000, "weight": "400g", "image": "cola_draft.png", "desc_uz": "Muzdek quyma Coca-Cola", "desc_ru": "Ледяная разливная Coca-Cola"},
-        {"id": "d3", "name_uz": "Coca-Cola 0.5", "name_ru": "Coca-Cola 0.5 бутылка", "price": 12000, "weight": "500g", "image": "cola_bottle.png", "desc_uz": "Coca-Cola klassik shisha", "desc_ru": "Классическая Coca-Cola"},
-        {"id": "d4", "name_uz": "Gazlanmagan suv BonAqua 0.5", "name_ru": "Негазированная вода BonAqua 0.5", "price": 5000, "weight": "500g", "image": "bonaqua_nogas.png", "desc_uz": "Tiniq tabiiy suv", "desc_ru": "Чистая природная вода"}
+        {"id": "d1", "name_uz": "Gazlangan suv BonAqua 0.5", "name_ru": "Газированная вода BonAqua 0.5", "price": 5000, "weight": "500 g", "image": "bonaqua_gas.png", "desc_uz": "Salqin gazlangan mineral suv", "desc_ru": "Освежающая газированная вода"},
+        {"id": "d2", "name_uz": "Coca-Cola 0.4 razliv", "name_ru": "Coca-Cola 0.4 разлив", "price": 10000, "weight": "400 g", "image": "cola_draft.png", "desc_uz": "Muzdek quyma Coca-Cola", "desc_ru": "Ледяная разливная Coca-Cola"},
+        {"id": "d3", "name_uz": "Coca-Cola 0.5", "name_ru": "Coca-Cola 0.5 бутылка", "price": 12000, "weight": "500 g", "image": "cola_bottle.png", "desc_uz": "Coca-Cola klassik shisha", "desc_ru": "Классическая Coca-Cola"},
+        {"id": "d4", "name_uz": "Gazlanmagan suv BonAqua 0.5", "name_ru": "Негазированная вода BonAqua 0.5", "price": 5000, "weight": "500 g", "image": "bonaqua_nogas.png", "desc_uz": "Tiniq tabiiy suv", "desc_ru": "Чистая природная вода"}
     ],
     "choy": [
-        {"id": "t1", "name_uz": "Qora choy", "name_ru": "Черный чай", "price": 5000, "weight": "350g", "image": "black_tea.png", "desc_uz": "Klassik achchiq qora choy", "desc_ru": "Классический черный чай"},
-        {"id": "t2", "name_uz": "Ko'k choy", "name_ru": "Зеленый чай", "price": 5000, "weight": "350g", "image": "green_tea.png", "desc_uz": "Tinchlantiruvchi ko'k choy", "desc_ru": "Успокаивающий зеленый чай"},
-        {"id": "t3", "name_uz": "Limonli choy", "name_ru": "Чай с лимоном", "price": 8000, "weight": "350g", "image": "lemon_tea.png", "desc_uz": "Limon va shakarli choy", "desc_ru": "Чай с лимоном и сахаром"}
+        {"id": "t1", "name_uz": "Qora choy", "name_ru": "Черный чай", "price": 5000, "weight": "350 g", "image": "black_tea.png", "desc_uz": "Klassik achchiq qora choy", "desc_ru": "Классический черный чай"},
+        {"id": "t2", "name_uz": "Qora choy limon va novotli", "name_ru": "Черный чай с лимоном и наватом", "price": 7000, "weight": "350 g", "image": "black_tea_lemon_novot.png", "desc_uz": "Limonli va novotli shirin qora choy", "desc_ru": "Черный чай с лимоном и наватом"},
+        {"id": "t3", "name_uz": "Qora choy novotli", "name_ru": "Черный чай с наватом", "price": 7000, "weight": "350 g", "image": "black_tea_novot.png", "desc_uz": "Novotli shirin qora choy", "desc_ru": "Черный чай с наватом"},
+        {"id": "t4", "name_uz": "Ko'k choy novotli", "name_ru": "Зеленый чай с наватом", "price": 7000, "weight": "350 g", "image": "green_tea_novot.png", "desc_uz": "Novotli shirin ko'k choy", "desc_ru": "Зеленый чай с наватом"},
+        {"id": "t5", "name_uz": "Ko'k choy limon va novotli", "name_ru": "Зеленый чай с лимоном и наватом", "price": 7000, "weight": "350 g", "image": "green_tea_lemon_novot.png", "desc_uz": "Limonli va novotli shirin ko'k choy", "desc_ru": "Зеленый чай с лимоном и наватом"},
+        {"id": "t6", "name_uz": "Ko'k choy", "name_ru": "Зеленый чай", "price": 5000, "weight": "350 g", "image": "green_tea.png", "desc_uz": "Tinchlantiruvchi ko'k choy", "desc_ru": "Успокаивающий зеленый чай"}
     ],
     "soyus": [
-        {"id": "so1", "name_uz": "Smetana", "name_ru": "Сметана", "price": 3000, "weight": "50g", "image": "sour_cream.png", "desc_uz": "Yog'li smetana", "desc_ru": "Густая сметана"},
-        {"id": "so2", "name_uz": "Tomato soyus", "name_ru": "Томатный соус", "price": 3000, "weight": "50g", "image": "tomato_sauce.png", "desc_uz": "Achchiq pomidor sousi", "desc_ru": "Острый томатный соус"}
+        {"id": "so1", "name_uz": "Smetana", "name_ru": "Сметана", "price": 3000, "weight": "50 g", "image": "smetana.png", "desc_uz": "Yog'li smetana", "desc_ru": "Густая сметана"},
+        {"id": "so2", "name_uz": "Sirka", "name_ru": "Уксус", "price": 3000, "weight": "50 g", "image": "sirka.png", "desc_uz": "Manti uchun sirka sousi", "desc_ru": "Уксусный соус для мантов"},
+        {"id": "so3", "name_uz": "Achchiq", "name_ru": "Острый соус", "price": 3000, "weight": "50 g", "image": "achchiq.png", "desc_uz": "Achchiq qalampir sousi", "desc_ru": "Острый перечный соус"},
+        {"id": "so4", "name_uz": "Qatiq", "name_ru": "Кефир", "price": 3000, "weight": "50 g", "image": "qatiq.png", "desc_uz": "Yangi quyuq qatiq", "desc_ru": "Свежий густой кефир"}
     ]
 }
 
